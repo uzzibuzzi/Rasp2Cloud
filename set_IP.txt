@@ -1,0 +1,17 @@
+
+sudo cp /etc/network/interfaces /etc/network/interface.backup
+sudo nano /etc/network/interfaces
+
+
+
+To use DHCP services, change the line to:
+iface eth0 inet dhcp
+To use static IP settings, change the line to:
+iface eth0 inet static
+
+
+For static IP settings, add lines for address, netmask, and gateway. For example:
+iface eth0 inet static
+    address 192.168.1.2
+    netmask 255.255.255.0
+    gateway 192.168.1.1
