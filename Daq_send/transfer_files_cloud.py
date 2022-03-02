@@ -43,7 +43,7 @@ def send2cloud_rasp():
     #sendString='sudo  blobxfer upload --storage-account testbenchpi4 --sas "?sv=2020-08-04&ss=bfqt&srt=co&sp=rwdlacupitfx&se=2022-01-30T17:03:10Z&st=2022-01-19T09:03:10Z&spr=https&sig=ykOpTDsq5TjWQ22ntcqrvgkhGg%2F2%2FUeb3qUbIen6MAg%3D" --remote-path achimpi4 --local-path /home/pi/Daq/files/'
     
     for everyfile  in messfiles:
-            os.system(sendString+str(all))
+        os.system(sendString+str(everyfile))
     
 
 def send2cloud():    
