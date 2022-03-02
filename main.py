@@ -14,9 +14,11 @@ from DRC import main
 
 def thread_function(name):
     #logging.info("Thread %s: starting", name)
-    send2cloud()
-    time.sleep(10)
-    #logging.info("Thread %s: finishing", name)
+    for i in range(10):
+        print("*********   Sending again  ***********")
+        send2cloud()
+        time.sleep(10)
+    #logging.info("Thread %s: finishing", name)git
 
 
 
