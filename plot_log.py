@@ -6,16 +6,13 @@ Created on Wed Mar  2 08:42:49 2022
 """
 import pandas as pd
 import os
+import matplotlib.pyplot as plt
 
-dirs=os.listdir("\log_data")
-
-
-
-mdf=pd.read_csv("")
-
-os.path.abspath(__file__)
-
-os.path.dirname(__file__)
+folder="C:\\Users\\vollmera\\Documents\\SVN_home\\trunk\\SW_app\\github\\Rasp2Cloud\\log_data\\"
+dirs=os.listdir(folder)
 
 
-__main__
+for each in dirs:
+    mdf=pd.read_csv(folder+str(each))
+    plt.plot(mdf)
+    plt.show()
