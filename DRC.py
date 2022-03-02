@@ -89,7 +89,7 @@ def main():
        
     # other stuff
     sample_interval = 0.01  # In Seconds
-    basepath = '/home/pi/EMBerry' 
+    basepath = '/home/pi/github' 
     mypath = basepath + '/log_data'
 
     try:
@@ -147,7 +147,7 @@ def main():
         csvwriter.writerows(myArrayHeader) # Write the array to file
         csvfile.flush()
         
-        t_clk = time.CLOCK_MONOTONIC
+        t_clk = time.CLOCK_MONOTONIC_RAW
         t_0 = time.clock_gettime(t_clk)
         t_last = t_0
         t_disp = 0
