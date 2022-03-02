@@ -1,0 +1,6 @@
+#ignore folder will see
+save/
+convert_model.tflite
+Mylogfile.txt
+*.ipynb
+log_data/
