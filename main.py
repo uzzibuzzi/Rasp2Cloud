@@ -4,7 +4,7 @@ Created on Wed Feb 23 09:31:47 2022
 
 @author: vollmera
 """
-import logging
+#import logging
 import threading
 import time
 from fakeDaqRec import mainRecord
