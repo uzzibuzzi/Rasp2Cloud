@@ -34,7 +34,7 @@ def send2cloud_win():
    
 def send2cloud_rasp():
     
-    sendString= 'blobxfer upload  --storage-account testbenchpi4 --sas "?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2023-08-09T17:30:05Z&st=2022-02-10T10:30:05Z&spr=https&sig=%2BkcIcyTpUK0tHDiSBW4gC%2FvZP%2BrvSa5YS2neC7X%2BnfM%3D" --remote-path achimpi4 --local-path /home/pi/Daq/files/'
+    sendString= 'blobxfer upload  --storage-account testbenchpi4 --sas "?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2023-08-09T17:30:05Z&st=2022-02-10T10:30:05Z&spr=https&sig=%2BkcIcyTpUK0tHDiSBW4gC%2FvZP%2BrvSa5YS2neC7X%2BnfM%3D" --remote-path achimpi4 --local-path '#'/home/pi/Daq/files/'
     
     folder="/home/pi/github/log_data/"
     messfiles=makeFileList(folder)                 
@@ -43,7 +43,7 @@ def send2cloud_rasp():
     #sendString='sudo  blobxfer upload --storage-account testbenchpi4 --sas "?sv=2020-08-04&ss=bfqt&srt=co&sp=rwdlacupitfx&se=2022-01-30T17:03:10Z&st=2022-01-19T09:03:10Z&spr=https&sig=ykOpTDsq5TjWQ22ntcqrvgkhGg%2F2%2FUeb3qUbIen6MAg%3D" --remote-path achimpi4 --local-path /home/pi/Daq/files/'
     
     for everyfile  in messfiles:
-        os.system(sendString+str(everyfile))
+        os.system(sendString+str(folder)+str(everyfile))
     
 
 def send2cloud():    
