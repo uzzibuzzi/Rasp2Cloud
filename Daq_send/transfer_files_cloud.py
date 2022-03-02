@@ -9,17 +9,25 @@ import os
 
 def send2cloud_win():
     folder="C:\\KBApps\\AzCopy\\"
-    folder="C:\\Users\\vollmera\\Documents\\SVN_home\\trunk\\SW_app\\github\\Rasp2Cloud\\"
-    filename="2022_February_23_104650.csv"
-    os.system('C:\\KBApps\\AzCopy\\azcopy copy "'+folder+filename+'" "https://testbenchpi4.blob.core.windows.net/achimpi4?sv=2020-08-04&st=2022-01-19T09%3A09%3A47Z&se=2023-09-20T08%3A09%3A00Z&sr=c&sp=racwdxlt&sig=o5eJidUhVuRDuIbUI%2BnaaACwAkEH4rFma4gBCsyjX7k%3D"')
+    folder="C:\\Users\\vollmera\\Documents\\SVN_home\\trunk\\SW_app\\github\\Rasp2Cloud\\log_data\\"
+    dirs=os.listdir(folder)
+    messfiles=[]
+    for names in dirs:
+        if names.endswith(".csv"):
+            messfiles.append(names)                      
+    for every in messfiles:
+        filename=every
+        
+        #filename="2022_February_23_104650.csv"
+        os.system('C:\\KBApps\\AzCopy\\azcopy copy "'+folder+filename+'" "https://testbenchpi4.blob.core.windows.net/achimpi4?sv=2020-08-04&st=2022-01-19T09%3A09%3A47Z&se=2023-09-20T08%3A09%3A00Z&sr=c&sp=racwdxlt&sig=o5eJidUhVuRDuIbUI%2BnaaACwAkEH4rFma4gBCsyjX7k%3D"')
 
-    print('C:\\KBApps\\AzCopy\\azcopy copy '+folder+filename+'" "https://testbenchpi4.blob.core.windows.net/achimpi4?sv=2020-08-04&st=2022-01-19T09%3A09%3A47Z&se=2023-09-20T08%3A09%3A00Z&sr=c&sp=racwdxlt&sig=o5eJidUhVuRDuIbUI%2BnaaACwAkEH4rFma4gBCsyjX7k%3D"')
+        print('C:\\KBApps\\AzCopy\\azcopy copy '+folder+filename+'" "https://testbenchpi4.blob.core.windows.net/achimpi4?sv=2020-08-04&st=2022-01-19T09%3A09%3A47Z&se=2023-09-20T08%3A09%3A00Z&sr=c&sp=racwdxlt&sig=o5eJidUhVuRDuIbUI%2BnaaACwAkEH4rFma4gBCsyjX7k%3D"')
     
     
     
    
 def send2cloud_rasp():
-    dirList=os.listdir("/home/pi/EMBerry/log_data/")
+    dirList=os.listdir("/home/pi/github/log_data/")
     print(dirList)
     csvFile=[]
     for each in dirList:
