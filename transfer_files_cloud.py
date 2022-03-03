@@ -11,43 +11,57 @@ import pandas as pd
 
 
 def writeLogfile(sendedFiles):
+    """gets an list and add ist to an existing log file.
+    if file doestn exist it creats ist"""
     folder="C:\\Users\\vollmera\\Documents\\SVN_home\\trunk\\SW_app\\github\\Rasp2Cloud\\log_data\\"
     transferlogfile=folder+"alreadySended.txt"
-    df = pd.DataFrame (sendedFiles, columns = ['sended'])
+    
     try:
         mdf=pd.read_csv(transferlogfile)     
-        mdf=pd.concat([mdf, df])
-        mdf.to_csv(transferlogfile)
+        alreadySended=list(mdf["sended"])
+        for each in sendedFiles:
+            alreadySended.append(each)
+        print("schon sended:",alreadySended)
+        print("to send",sendedFiles)
+        df = pd.DataFrame (alreadySended, columns = ['sended'])
     except:
-        df.to_csv(transferlogfile)
+        df = pd.DataFrame (sendedFiles, columns = ['sended'])
+    df.to_csv(transferlogfile)
         
 
 
 def makeFileList(path):
+    """this makes a list of files from path 
+    all .csv files will be collected and compared with 
+    the already sended files listed in the .txt file in path"""
+    
     dirs=os.listdir(path)
     messfiles=[]
     for names in dirs:
         if names.endswith(".csv"):
             messfiles.append(names)
-    try: 
+        if names.endswith(".txt"):
+            logfilename=names
+            print(logfilename)
+        
+    try:     #compare with already sended files out of file list
         transferlogfile=path+"alreadySended.txt"
         mdf=pd.read_csv(transferlogfile)
-        alreadySended=list(mdf["sended"])[:4]
+        alreadySended=list(mdf["sended"])
     except:
         alreadySended=[]
-        set(messfiles)-set(alreadySended)
-    return set(messfiles)-alreadySended    
-        
+        alreadySended=[] # file doesnt exist start with empty compaison
+    filToSend=set(messfiles)-set(alreadySended)
+    return list(filToSend)
 
+    
+            
 
 
 def send2cloud_win():
     folder="C:\\KBApps\\AzCopy\\"
     folder="C:\\Users\\vollmera\\Documents\\SVN_home\\trunk\\SW_app\\github\\Rasp2Cloud\\log_data\\"
     messfiles=makeFileList(folder)                 
-    
-    messfiles=messfiles[:5]
-    
     
     for everyfile in messfiles:
         filename=everyfile
