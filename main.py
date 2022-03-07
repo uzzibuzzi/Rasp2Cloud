@@ -14,7 +14,7 @@ from DRC import main
 
 def thread_function(name):
     #logging.info("Thread %s: starting", name)
-    for i in range(10):
+    for i in range(3):
         print("*********   Sending again  ***********")
         send2cloud()
         time.sleep(10)

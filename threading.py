@@ -4,11 +4,11 @@ Created on Wed Feb 23 09:31:47 2022
 
 @author: vollmera
 """
-#import logging
+
 import threading
 import time
 from fakeDaqRec import mainRecord
-#from transfer_files_rasp import send2cloud
+
 from transfer_files_cloud import send2cloud
 
 
