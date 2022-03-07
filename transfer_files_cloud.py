@@ -93,8 +93,9 @@ def send2cloud():
         print("send for Windows")
         send2cloud_win()
     else:
-        send2cloud_rasp()
         print("send for Rasp")
+        send2cloud_rasp()
+    
         
         
     
