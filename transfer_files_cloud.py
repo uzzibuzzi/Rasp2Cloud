@@ -56,57 +56,7 @@ def makeFileList(path):
     return list(filToSend)
 
     
-logfilename="alreadySended.txt"
 
-
-def fileIsCLosed():
-    import psutil    
-    
-    
-    for proc in psutil.process_iter():
-        try:
-            # this returns the list of opened files by the current process
-            flist = proc.open_files()
-            if flist:
-                print(proc.pid,proc.name)
-                
-                
-                for nt in flist:
-                    print("\t",nt.path)
-                    
-                
-    try:
-        open(logfilename) # or "a+", whatever you need
-    except IOError:
-        print("Could not open file! Please close Excel!")
-    
-    try:
-        with open(logfilename, "r") as file:
-            # Print the success message
-            print("File has opened for reading.")
-# Raise error if the file is opened before
-    except IOError:
-        print("File has opened already.")
-    
-    
-    
-    
-    
-    try:
-        f = open(logfilename)
-        print("file is closed")
-    except:
-        print("file is open")
-    f.close()
-    
-    
-    if f.closed:
-        print ('file is closed')
-    else:
-        print("file is open")
-
-
-            
 
 
 def send2cloud_win():
