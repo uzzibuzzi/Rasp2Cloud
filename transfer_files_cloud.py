@@ -15,7 +15,13 @@ def writeLogfile(sendedFiles):
     if file doestn exist it creats ist"""
     folder="C:\\Users\\vollmera\\Documents\\SVN_home\\trunk\\SW_app\\github\\Rasp2Cloud\\log_data\\"
     transferlogfile=folder+"alreadySended.txt"
+    if os.name == 'nt':
+        folder="C:\\Users\\vollmera\\Documents\\SVN_home\\trunk\\SW_app\\github\\Rasp2Cloud\\log_data\\"
+    else:
+        folder="/home/pi/github/log_data/"
     
+    transferlogfile=folder+"alreadySended.txt"
+
     try:
         mdf=pd.read_csv(transferlogfile)     
         alreadySended=list(mdf["sended"])
