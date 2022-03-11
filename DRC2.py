@@ -30,6 +30,35 @@ import errno
 
 import math
 
+class recorder:
+    def __init__(self,name):
+        self.name=name
+        self.channels=[0, 1, 2, 3, 4, 5, 6, 7]
+        self.adress=select_hat_device(HatIDs.MCC_128)
+        self.hat=mcc128(self.address)
+#        self.t_clk = time.CLOCK_MONOTONIC_RAW
+#        self.t_0 = time.clock_gettime(t_clk)
+#        self.t_last = t_0
+        self.t_disp = 0
+        self.disp_flag = True
+        self.tt_0 = 0
+        self.tt_1 = 0
+        self.run_time=0
+        self.basepath = '/home/pi/github' 
+        self.mypath = self.basepath + '/log_data'
+        
+        
+    def setHW(self, channel,adress):
+        self.channels=channel
+        self.adress=adress        
+        
+    def confifgAll(self):
+        pass
+    
+      
+    
+
+
 # Constants
 CURSOR_BACK_2 = '\x1b[2D'
 ERASE_TO_END_OF_LINE = '\x1b[0K'
