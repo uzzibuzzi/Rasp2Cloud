@@ -7,26 +7,24 @@ Created on Wed Feb 23 09:31:47 2022
 
 import threading
 import time
-from fakeDaqRec import mainRecord
 
 from transfer_files_cloud import send2cloud
-
+from thread_scan import continuesrecord
 
 def thread_function(name):
 
     send2cloud()
-    time.sleep(10)
+    time.sleep(100)
 
 
 
 
 if __name__ == "__main__":
-    format = "%(asctime)s: %(message)s"
     x = threading.Thread(target=thread_function, args=(1,))
 
     x.start()
     # x.join()
-    while mainRecord():
+    while continuesrecord():
         pass
     
  
