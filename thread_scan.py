@@ -41,6 +41,68 @@ CURSOR_BACK_2 = '\x1b[2D'
 ERASE_TO_END_OF_LINE = '\x1b[0K'
 
 
+def write2file(fileDateTime,data):
+    channels = [0, 1]
+    print("len data: ",len(data))
+    try:
+        df=pd.read_csv(fileDateTime)
+    except:
+        df=""
+        
+    if (len(df)<1):
+        myArrayHeader=[]
+        
+        myArrayHeader.append([]) 
+        for chan in channels: 
+            print(chan)
+            myArrayHeader[0].append('   Chan ' + str(chan)) 
+
+        csvfile = open(fileDateTime, "a",newline="")
+        csvwriter = csv.writer(csvfile) 
+        csvwriter.writerows(myArrayHeader) # Write the array to file
+        csvfile.flush()
+        
+        myArray=[]
+        
+        num_channels=2
+        samples_read_per_channel = int(len(data) / num_channels)
+        for count in range(samples_read_per_channel-1):
+#            print(data[slice*num_channels:(slice+1)*num_channels])
+            myArray.append(data[count*num_channels:(count+1)*num_channels])
+        
+        csvfile = open(fileDateTime, "a",newline="")
+        csvwriter = csv.writer(csvfile) 
+        csvwriter.writerows(myArray) # Write the array to file
+        csvfile.flush()
+
+    else:
+        myArray=[]
+        num_channels=2
+        samples_read_per_channel = int(len(data) / num_channels)
+        for count in range(samples_read_per_channel-1):
+#            print(data[slice*num_channels:(slice+1)*num_channels])
+            myArray.append(data[count*num_channels:(count+1)*num_channels])
+        csvfile = open(fileDateTime, "a",newline="")
+        csvwriter = csv.writer(csvfile) 
+        csvwriter.writerows(myArray) # Write the array to file
+        csvfile.flush()
+
+"""
+writer check f
+
+data=[2, 2 ,3,3,6,7]
+
+num_channels=2
+samples_read_per_channel = int(len(data) / num_channels)
+for slice in range(samples_read_per_channel):
+    print(data[slice*num_channels:(slice+1)*num_channels])
+
+write2file(fileDateTime,data)
+
+"""
+
+
+
 def dictWriter2csv(fileDateTime,names,dataDict):
     """
     writert for sict to csv
@@ -78,7 +140,7 @@ def continuesrecord():
 
     # Store the channels in a list and convert the list to a channel mask that
     # can be passed as a parameter to the MCC 118 functions.
-    channels = [0, 1, 2, 3]
+    channels = [0, 1]
     channel_mask = chan_list_to_mask(channels)
     num_channels = len(channels)
 
@@ -196,7 +258,8 @@ def read_and_display_data(hat, num_channels,csvKeys):
     # to -1 (READ_ALL_AVAILABLE), this function returns immediately with
     # whatever samples are available (up to user_buffer_size) and the timeout
     # parameter is ignored.
-    while True:
+    loop=0
+    while True:#loop<10:
         read_result = hat.a_in_scan_read(read_request_size, timeout)
 
         # Check for an overrun error
@@ -207,29 +270,35 @@ def read_and_display_data(hat, num_channels,csvKeys):
             print('\n\nBuffer overrun\n')
             break
 
+    
         samples_read_per_channel = int(len(read_result.data) / num_channels)
         total_samples_read += samples_read_per_channel
 
         # Display the last sample for each channel.
-        print('\r{:12}'.format(samples_read_per_channel),' {:12} '.format(total_samples_read), end='')
-
+        #print('\r{:12}'.format(samples_read_per_channel),' {:12} '.format(total_samples_read), end='')
+        dataDict={} 
         if samples_read_per_channel > 0:
+            loop+=1
             index = samples_read_per_channel * num_channels - num_channels
-            dataDict={} 
-            for i in range(num_channels):
-                #print('{:10.5f}'.format(read_result.data[index+i]), 'V ', end='')         
-                dataDict[csvKeys[i]]=read_result.data[index+i]
-                          
-                
-            dictWriter2csv(fileDateTime,csvKeys,dataDict)
-            stdout.flush()
+            print("index",index)
+            write2file(fileDateTime,read_result.data)
+            #dictWriter2csv(fileDateTime,csvKeys,dataDict)
+            
+      
             delta=datetime.now()-starttime
-            if (delta.total_seconds()>10):
-                print("new file")
+            if (delta.total_seconds()>20):
+                print(dataDict)
+                print(read_result.data)
+                print("new file",starttime)
                 startname = datetime.strftime(datetime.now(), "%Y_%B_%d_%H%M%S")
                 fileDateTime = folder + startname + ".csv"
                 starttime=datetime.now()
+                print("new file",starttime)
+
+  
+
+
 
 
 if __name__ == '__main__':
-    main()
+    continuesrecord()
