@@ -310,7 +310,7 @@ def read_and_display_data(hat, num_channels,csvKeys):
         delta=datetime.now()-filestart
         if (delta.total_seconds()>600):
             print(len(dataDict))
-            startname = datetime.strftime(datetime.now(), "%Y_%B_%d_%H%M%S")
+            startname = datetime.strftime(datetime.now(), "%Y_%m_%d_%H-%M-%S")
             fileDateTime = folder + startname + ".csv"
             filestart=datetime.now()
 
