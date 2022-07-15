@@ -3,6 +3,8 @@ import os, sys
 import shutil
 from azure.storage.blob import BlockBlobService
 
+# https://dhpdataanalyticsstorage.blob.core.windows.net/yanar
+
 ### CONFIGURATION ###
 cronos_ip = '192.168.100.133'
 user = 'imc'
