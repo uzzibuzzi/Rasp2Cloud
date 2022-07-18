@@ -1,25 +1,22 @@
 import ftplib
 import os, sys
+import subprocess
 import shutil
 from azure.storage.blob import BlockBlobService
-
-# https://dhpdataanalyticsstorage.blob.core.windows.net/yanar
+import time
 
 ### CONFIGURATION ###
-cronos_ip = '192.168.100.133'
+cronos_ip = '192.168.100.231'
 user = 'imc'
 pw = 'imc'
-azure_storage_account = 'dhpdataanalyticsstorage'
-azure_sas_key = 'sv=2020-10-02&si=yanar-full&sr=c&sig=GSiSw9cNFFCy%2FWo1Cubs%2BqQLqecZQfqHcpby6or%2Fi5w%3D'
-azure_path = 'yanar/pcmcia'
-azure_blob_container = 'yanar'
+azure_storage_name = "testbenchpi4"
+azure_sas_key = "?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2023-08-09T17:30:05Z&st=2022-02-10T10:30:05Z&spr=https&sig=%2BkcIcyTpUK0tHDiSBW4gC%2FvZP%2BrvSa5YS2neC7X%2BnfM%3D"
+azure_path = 'achimpi4/Cronos2Cloud'
+azure_blob_container = 'achimpi4'
 # directory in Cronos to read from
 cronos_dir = 'pcmcia' 
 # directory in Raspberry to save the cronos files locally
 raspberry_dir = '/home/pi/Cronos2Cloud' 
-# filepath in Raspberry to read files from 
-raspberry_read_path = raspberry_dir + '/pcmcia/'
-
 
 def cronos_connect():
     """ establish the FTP connection to Cronos """
@@ -31,61 +28,72 @@ def cronos_connect():
     except ftplib.error_perm as e:
         print("Connection to Cronos could not be established! Check IP, user and password.")
 
-def pi_mkdir():
+def pi_mkdir(directory):
     """ create local directory in raspberry """
-    if not os.path.isdir(raspberry_dir):
+    if not os.path.isdir(raspberry_dir + '/' + directory):
         oldmask = os.umask(000)
-        os.makedirs(raspberry_dir,mode=0o777)
+        os.makedirs(raspberry_dir + '/' + directory,mode=0o777)
         os.umask(oldmask)
 
-def send2cloud():
+def send2cloud(read_path, azure_final_path):
     """ send selected cronos files to cloud """
-    os_command = 'blobxfer upload  --storage-account ' + azure_storage_account + ' --sas ' + azure_sas_key + ' --remote-path ' + azure_path + ' --local-path ' + raspberry_read_path
+    os_command = 'blobxfer upload  --storage-account ' + azure_storage_name + ' --sas "?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2023-08-09T17:30:05Z&st=2022-02-10T10:30:05Z&spr=https&sig=%2BkcIcyTpUK0tHDiSBW4gC%2FvZP%2BrvSa5YS2neC7X%2BnfM%3D" --remote-path ' + azure_final_path + ' --local-path ' + read_path
     os.system(os_command)
 
 def get_cloud_content():
     """ get content of blob storage """
-    block_blob_service = BlockBlobService(account_name=azure_storage_account, sas_token=azure_sas_key)
+    block_blob_service = BlockBlobService(account_name=azure_storage_name, sas_token=azure_sas_key)
     return block_blob_service
 
-def check_cloud_content(piContent):
+def check_cloud_content(experiment, experiment_date):
     """ check if new files are added """
     block_blob_service = get_cloud_content()
     blobContent = block_blob_service.list_blobs(azure_blob_container)
     blobFiles = []
     for content in blobContent:
         content_name_raw = content.name
-        if "pcmcia" in content_name_raw:
+        searchString = 'Cronos2Cloud/' + experiment 
+        if search in content_name_raw:
             content_name = content_name_raw.split('/', 4)[-2]
             blobFiles.append(content_name)
     blobFiles = list(dict.fromkeys(blobFiles))
-    filesMissing = []
-    for piFile in piContent:
-        if piFile not in blobFiles:
-            filesMissing.append(piFile)
-        else:
-            pass
-    return filesMissing
+    blobFiles_cleaned = blobFiles.copy()
+    blobFiles_cleaned.remove("Cronos2Cloud")
+    if date not in blobFiles_cleaned:
+        return True
+    else:
+        return False
 
-def cronos2pi():
-    pi_mkdir()
+def cronos2cloud():
     ftp = cronos_connect()
     folders_cronos = ftp.nlst(cronos_dir)
+    folders_cronos = [name for name in folders_cronos if 'EMB' in name]
     ftp.quit()
-    for folder in folders_cronos:
+    for experiment in folders_cronos:
+        pi_mkdir(experiment)
         ftp = cronos_connect()
-        print(folder)
-        # destination_folder = destination_dir + '/' + cronos_dir + '/' + folder
-        # pi_mkdir(destination_folder)
-        # ftp.cwd(cronos_dir + '/' + folder)
-        # files_in_folder = []
-        # ftp.dir(files_in_folder.append)
-        # for file in files_in_folder:
-        #     filename = file.split(None, 8)[-1]
-        #     if filename != 'DirClosed': #this is a random empty file
-        #         # download the file
-        #         local_filepath = os.path.join(destination_folder, filename)
-        #         lf = open(local_filepath, "wb")
-        #         ftp.retrbinary("RETR " + filename, lf.write)
-        #         lf.close()
-        # print("Raspi upload finished!")
+        ftp.cwd(cronos_dir + '/' + experiment)
+        experiment_dates = ftp.nlst()[:5]
+        ftp.quit()
+        for date_raw in experiment_dates:
+            date_raw2 = date_raw.split(None, 8)[-1]
+            date = date_raw2[:-4].replace(" ","_")
+            if check_cloud_content(date) == True:
+                pi_mkdir(experiment + '/' + date)
+                ftp = cronos_connect()
+                ftp.cwd(cronos_dir + '/' + experiment + '/' + date_raw2)
+                experiment_files = ftp.nlst()
+                for file_raw in experiment_files:
+                    file = file_raw.split(None, 8)[-1]
+                    if file != 'DirClosed':
+                        local_filepath = os.path.join(raspberry_dir + '/' + experiment + '/' + date, file)
+                        lf = open(local_filepath, "wb")
+                        ftp.retrbinary("RETR " + file, lf.write)
+                        lf.close()
+                        send2cloud(raspberry_dir + '/' + experiment + '/' + date + '/' + file, azure_path + '/' + experiment + '/' + date)
+            print("Experiment: "+experiment+", Date: "+date+", Cloud update done.")       
+            ftp.quit()
+
+        
+if __name__ == '__main__':
+    cronos2cloud()
