@@ -51,18 +51,18 @@ def check_cloud_content(experiment, experiment_date):
     blobContent = block_blob_service.list_blobs(azure_blob_container)
     blobFiles = []
     for content in blobContent:
-        content_name_raw = content.name
-        searchString = 'Cronos2Cloud/' + experiment 
-        if search in content_name_raw:
-            content_name = content_name_raw.split('/', 4)[-2]
+        content_name = content.name
+        searchString = 'Cronos2Cloud' 
+        if searchString in content_name:
             blobFiles.append(content_name)
     blobFiles = list(dict.fromkeys(blobFiles))
     blobFiles_cleaned = blobFiles.copy()
     blobFiles_cleaned.remove("Cronos2Cloud")
-    if date not in blobFiles_cleaned:
-        return True
-    else:
-        return False
+    missing = True
+    for f in blobFiles:
+        if (experiment in f) and (experiment_date in f):
+            missing = False
+    return missing
 
 def cronos2cloud():
     ftp = cronos_connect()
@@ -91,9 +91,11 @@ def cronos2cloud():
                         ftp.retrbinary("RETR " + file, lf.write)
                         lf.close()
                         send2cloud(raspberry_dir + '/' + experiment + '/' + date + '/' + file, azure_path + '/' + experiment + '/' + date)
-            print("Experiment: "+experiment+", Date: "+date+", Cloud update done.")       
-            ftp.quit()
-
+                ftp.quit()
+                print("Experiment: "+experiment+", Date: "+date+", Cloud update done.")       
         
 if __name__ == '__main__':
-    cronos2cloud()
+    while(1):
+        cronos2cloud()
+        print("Cronos query done.")
+        time.sleep(3600)
