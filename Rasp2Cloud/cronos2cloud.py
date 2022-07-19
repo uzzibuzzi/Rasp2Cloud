@@ -51,19 +51,18 @@ def check_cloud_content(experiment, experiment_date):
     blobContent = block_blob_service.list_blobs(azure_blob_container)
     blobFiles = []
     for content in blobContent:
-        content_name = content.name
-        searchString = 'Cronos2Cloud' 
-        if searchString in content_name:
-            blobFiles.append(content_name)
+        searchString = 'Cronos2Cloud'
+        if searchString in content.name:
+            blobFiles.append(content.name)
     blobFiles = list(dict.fromkeys(blobFiles))
-    blobFiles_cleaned = blobFiles.copy()
-    blobFiles_cleaned.remove("Cronos2Cloud")
     missing = True
     for f in blobFiles:
         if (experiment in f) and (experiment_date in f):
             missing = False
-    return missing
-
+            print("Experiment Date: " + experiment_date + " already in cloud.")
+            break
+    return missing        
+            
 def cronos2cloud():
     ftp = cronos_connect()
     folders_cronos = ftp.nlst(cronos_dir)
@@ -73,12 +72,12 @@ def cronos2cloud():
         pi_mkdir(experiment)
         ftp = cronos_connect()
         ftp.cwd(cronos_dir + '/' + experiment)
-        experiment_dates = ftp.nlst()[:5]
+        experiment_dates = ftp.nlst()[:-1]
         ftp.quit()
         for date_raw in experiment_dates:
             date_raw2 = date_raw.split(None, 8)[-1]
             date = date_raw2[:-4].replace(" ","_")
-            if check_cloud_content(date) == True:
+            if check_cloud_content(experiment, date) == True:
                 pi_mkdir(experiment + '/' + date)
                 ftp = cronos_connect()
                 ftp.cwd(cronos_dir + '/' + experiment + '/' + date_raw2)
@@ -91,11 +90,13 @@ def cronos2cloud():
                         ftp.retrbinary("RETR " + file, lf.write)
                         lf.close()
                         send2cloud(raspberry_dir + '/' + experiment + '/' + date + '/' + file, azure_path + '/' + experiment + '/' + date)
-                ftp.quit()
                 print("Experiment: "+experiment+", Date: "+date+", Cloud update done.")       
+                ftp.quit()
+
         
 if __name__ == '__main__':
     while(1):
+        print("Cronos query starting...")
         cronos2cloud()
         print("Cronos query done.")
         time.sleep(3600)
