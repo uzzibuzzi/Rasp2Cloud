@@ -90,6 +90,7 @@ def cronos2cloud():
                         ftp.retrbinary("RETR " + file, lf.write)
                         lf.close()
                         send2cloud(raspberry_dir + '/' + experiment + '/' + date + '/' + file, azure_path + '/' + experiment + '/' + date)
+                ftp.rmd(date_raw2)
                 print("Experiment: "+experiment+", Date: "+date+", Cloud update done.")       
                 ftp.quit()
 
