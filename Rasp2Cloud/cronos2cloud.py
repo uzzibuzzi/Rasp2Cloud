@@ -10,11 +10,15 @@ import time
 cronos_ip = '192.168.100.231'
 user = 'imc'
 pw = 'imc'
-azure_storage_name = "testbenchpi4"
+#azure_storage_name = "testbenchpi4"
+azure_storage_name = "dhpdataanalyticsstorage"
 # IMPORTANT: sas_key needs to be typed manually into the "os_command" line in the function "send2cloud"
-azure_sas_key = "?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2023-08-09T17:30:05Z&st=2022-02-10T10:30:05Z&spr=https&sig=%2BkcIcyTpUK0tHDiSBW4gC%2FvZP%2BrvSa5YS2neC7X%2BnfM%3D"
-azure_path = 'achimpi4/Cronos2Cloud'
-azure_blob_container = 'achimpi4'
+#azure_sas_key = "?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2023-08-09T17:30:05Z&st=2022-02-10T10:30:05Z&spr=https&sig=%2BkcIcyTpUK0tHDiSBW4gC%2FvZP%2BrvSa5YS2neC7X%2BnfM%3D"
+azure_sas_key = "sv=2021-10-04&si=mahl-rw_04_23&sr=c&sig=yQ%2FJUkPklwsjPe3wModmBXGf2%2FDyOmVFAMqppeI10iY%3D"
+#azure_path = 'achimpi4/Cronos2Cloud'
+azure_path = 'mahl/Cronos2Cloud'
+#azure_blob_container = 'achimpi4'
+azure_blob_container = 'mahl'
 # directory in Cronos to read from
 cronos_dir = 'pcmcia' 
 # directory in Raspberry to save the cronos files locally
@@ -41,7 +45,7 @@ def pi_mkdir(directory):
 
 def send2cloud(read_path, azure_final_path):
     """ send selected cronos files to cloud """
-    os_command = 'blobxfer upload  --storage-account ' + azure_storage_name + ' --sas "?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2023-08-09T17:30:05Z&st=2022-02-10T10:30:05Z&spr=https&sig=%2BkcIcyTpUK0tHDiSBW4gC%2FvZP%2BrvSa5YS2neC7X%2BnfM%3D" --remote-path ' + azure_final_path + ' --local-path ' + read_path
+    os_command = 'blobxfer upload  --storage-account ' + azure_storage_name + ' --sas ' + azure_sas_key + ' --remote-path ' + azure_final_path + ' --local-path ' + read_path
     os.system(os_command)
 
 def get_cloud_content():
